@@ -8,7 +8,15 @@ namespace Gerenciamento_Ingresso
     public static class NIngresso
     {
         public static List<Ingresso> ingressos;
+        public static List<Ingresso> nao_comprados;
 
+        public static void Inserir_Escolha(Ingresso i)
+        {
+            nao_comprados = Abrir_naocomprado();
+            nao_comprados.Add(i);
+            Salvar_naocomprado(nao_comprados);
+            
+        }
 
         public static void Inserir_Ingresso(Ingresso i)
         {
@@ -74,6 +82,7 @@ namespace Gerenciamento_Ingresso
         }
 
         private static string arquivo_ingresso = "ingressos.xml";
+        private static string arquivo_naocomprado = "nao_comprados.xml";
         public static List<Ingresso> Abrir_Ingresso()
         {
             try
@@ -88,6 +97,21 @@ namespace Gerenciamento_Ingresso
         public static void Salvar_Ingresso(List<Ingresso> obj)
         {
             Arquivo<List<Ingresso>>.Salvar(arquivo_ingresso, obj);
+        }
+        public static List<Ingresso> Abrir_naocomprado()
+        {
+            try
+            {
+                return Arquivo<List<Ingresso>>.Abrir(arquivo_naocomprado);
+            }
+            catch (FileNotFoundException)
+            {
+                return new List<Ingresso>();
+            }
+        }
+        public static void Salvar_naocomprado(List<Ingresso> obj)
+        {
+            Arquivo<List<Ingresso>>.Salvar(arquivo_naocomprado, obj);
         }
     }
 }

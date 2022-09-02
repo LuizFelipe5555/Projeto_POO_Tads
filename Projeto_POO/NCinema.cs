@@ -8,7 +8,7 @@ namespace Gerenciamento_Ingresso
 {
     public static class NCinema
     {
-        private static List<Cinema> cinemas;
+        public static List<Cinema> cinemas;
         private static string arquivo = "./cinemas.xml";
 
         public static void Inserir(Cinema c)

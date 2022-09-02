@@ -526,7 +526,7 @@ namespace Gerenciamento_Ingresso
                         {
                             if (cinema.Id == s.Id_Cinema)
                             {
-                                Console.WriteLine($"Id:{s.Id} - Sala:{s.Sala} - Data:{s.Data_Sessao} - Hora:{s.Hora_sessao} - Filme:{filme.Nome_filme} - Gênero{filme.Genero} - Filme:{filme.Avaliacao} - Cinema:{cinema.Nome} - Cidade:{cinema.Cidade} - Estado:{cinema.Estado} - Endereco:{cinema.Endereco}");
+                                Console.WriteLine($"Id:{s.Id} - Sala:{s.Sala} - Data:{s.Data_Sessao} - Hora:{s.Hora_sessao} - Filme:{filme.Nome_filme} - Gênero:{filme.Genero} - Filme:{filme.Avaliacao} - Cinema:{cinema.Nome} - Cidade:{cinema.Cidade} - Estado:{cinema.Estado} - Endereco:{cinema.Endereco}");
                             }
                         }
                     }
@@ -652,13 +652,15 @@ namespace Gerenciamento_Ingresso
         }
         public static void Confirmar_Compra()
         {
-            foreach(var item in quantidade_ingresso)
+            List<Ingresso> ingressos = NIngresso.Abrir_naocomprado();
+            foreach (var item in ingressos)
             {
                 NUsuario.Inserir_Comprado(item);
             }
             Console.WriteLine("Compra Realizada");
             Console.WriteLine();
-            quantidade_ingresso = null;
+            ingressos = null;
+            NIngresso.Salvar_naocomprado(ingressos);
         }
         public static void Escolher_Ingresso()
         {
@@ -666,23 +668,28 @@ namespace Gerenciamento_Ingresso
             Console.Write("Escolha o ingresso: ");
             int id = int.Parse(Console.ReadLine());
             Ingresso ig = NIngresso.Listar_Ingresso(id);
-
-            Ingresso ig_2 = new Ingresso { Id = id, Id_Cadeira = ig.Id_Cadeira, Id_Espectador = espec.Id, Id_Sessao = ig.Id_Sessao, Preco = ig.Preco, Tipo_ingresso = ig.Tipo_ingresso };
-            quantidade_ingresso.Add(ig_2);
+            Listar_Sessao();
+            Console.Write("Insira o id da sessão: ");
+            int id_sessao = int.Parse(Console.ReadLine());
+            Listar_Cadeira();
+            Console.Write("Insira o id da cadeira: ");
+            int id_cadeira = int.Parse(Console.ReadLine());
+            Cadeira c = NCadeira.Listar(id_cadeira);
+            Sessao s = NSessao.Listar(id_sessao);
+            Ingresso ig_2 = new Ingresso { Id = id, Id_Cadeira = c.Id, Id_Espectador = espec.Id, Id_Sessao = s.Id, Preco = ig.Preco, Tipo_ingresso = ig.Tipo_ingresso };
+            NIngresso.Inserir_Escolha(ig);
             Console.WriteLine("Ingresso adicionado.");
             Console.WriteLine();
         }
         public static void Remover_Ingresso()
         {
             Ingresso ingresso;
-            foreach (Ingresso i in quantidade_ingresso)
-            {
-                Console.WriteLine($"{i.Id} - {i.Preco} - {i.Tipo_ingresso} - {NUsuario.Listar_Espectadores(i.Id_Espectador)}");
-            }
-            Console.Write("Insira o id do ingresso para ser excluido");
+            List<Ingresso> ingressos = NIngresso.Abrir_naocomprado();
+            Listar_Ingressos();
+            Console.Write("Insira o id do ingresso: ");
             int id = int.Parse(Console.ReadLine());
 
-            foreach (Ingresso i in quantidade_ingresso)
+            foreach (Ingresso i in ingressos)
             {
                 if (i.Id == id)
                 {
@@ -693,12 +700,14 @@ namespace Gerenciamento_Ingresso
                     break;
                 }
             }
+            NIngresso.Salvar_naocomprado(ingressos);
         }
         public static void Listar_Ingressos()
         {
-            foreach (Ingresso i in quantidade_ingresso)
+            List<Ingresso> ingressos = NIngresso.Abrir_naocomprado();
+            foreach(Ingresso i in ingressos)
             {
-                Console.WriteLine($"{i.Id} - {i.Tipo_ingresso} - {i.Preco} - {NUsuario.Listar_Espectadores(i.Id_Espectador)} - {NCadeira.Listar(i.Id_Cadeira).Cadeira_coluna} - {NCadeira.Listar(i.Id_Cadeira).Cadeira_fileira} - {NCadeira.Listar(i.Id_Cadeira).Cadeira_tipo} - {NSessao.Listar(i.Id_Sessao).Sala} - {NSessao.Listar(i.Id_Sessao).Hora_sessao} - {NSessao.Listar(i.Id_Sessao).Data_Sessao}");
+                Console.WriteLine($"{i.Id} - {i.Preco} - {i.Tipo_ingresso} - {NUsuario.Listar_Espectadores(i.Id_Espectador)} - {NSessao.Listar(i.Id_Sessao).Sala} - {NCadeira.Listar(i.Id_Cadeira).Cadeira_coluna} - {NCadeira.Listar(i.Id_Cadeira).Cadeira_fileira} - {NCadeira.Listar(i.Id_Cadeira).Cadeira_tipo}");
             }
         }
 
